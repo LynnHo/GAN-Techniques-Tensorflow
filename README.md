@@ -13,7 +13,7 @@ Tensorflow implementation of some common techniques of GANs, including losses, r
     - [x] WGAN-GP
     - [x] DRAGAN
 - Weights Normalizations/Regularizations:
-    - [x] SpectralNorm,
+    - [x] SpectralNorm
     - [x] Weight Clipping
     - [ ] WeightNorm
     - [ ] Orthonormal Regularization
