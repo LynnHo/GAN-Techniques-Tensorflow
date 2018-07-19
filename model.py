@@ -30,7 +30,6 @@ spectral_norm = tl.spectral_normalization
 # =                                   models                                   =
 # ==============================================================================
 
-
 def _get_norm_fn(norm_name, is_training):
     if norm_name == 'none':
         norm = None

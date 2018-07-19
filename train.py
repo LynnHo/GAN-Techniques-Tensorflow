@@ -26,16 +26,19 @@ parser.add_argument('--epoch', dest='epoch', type=int, default=100)
 parser.add_argument('--batch_size', dest='batch_size', type=int, default=64)
 parser.add_argument('--lr_d', dest='lr_d', type=float, default=0.0002, help='learning rate of d')
 parser.add_argument('--lr_g', dest='lr_g', type=float, default=0.0002, help='learning rate of g')
-parser.add_argument('--z_dim', dest='z_dim', type=int, default=100, help='dimension of latent')
 parser.add_argument('--n_d', dest='n_d', type=int, default=1)
 parser.add_argument('--n_g', dest='n_g', type=int, default=1)
+parser.add_argument('--n_d_pre', dest='n_d_pre', type=int, default=0)
+parser.add_argument('--optimizer', dest='optimizer', default='adam', choices=['adam', 'rmsprop'])
+
+parser.add_argument('--z_dim', dest='z_dim', type=int, default=100, help='dimension of latent')
 parser.add_argument('--loss_mode', dest='loss_mode', default='gan', choices=['gan', 'lsgan', 'wgan', 'hinge'])
 parser.add_argument('--gp_mode', dest='gp_mode', default='none', choices=['none', 'dragan', 'wgan-gp'], help='type of gradient penalty')
 parser.add_argument('--gp_coef', dest='gp_coef', type=float, default=10.0, help='coefficient of gradient penalty')
 parser.add_argument('--norm', dest='norm', default='batch_norm', choices=['batch_norm', 'instance_norm', 'layer_norm', 'none'])
 parser.add_argument('--weights_norm', dest='weights_norm', default='none', choices=['none', 'spectral_norm', 'weight_clip'])
+
 parser.add_argument('--model', dest='model_name', default='conv_mnist', choices=['conv_mnist', 'conv_64'])
-parser.add_argument('--optimizer', dest='optimizer', default='adam', choices=['adam', 'rmsprop'])
 parser.add_argument('--dataset', dest='dataset_name', default='mnist', choices=['mnist', 'celeba'])
 parser.add_argument('--experiment_name', dest='experiment_name', default='default')
 
@@ -45,16 +48,20 @@ epoch = args.epoch
 batch_size = args.batch_size
 lr_d = args.lr_d
 lr_g = args.lr_g
-z_dim = args.z_dim
 n_d = args.n_d
 n_g = args.n_g
+n_d_pre = args.n_d_pre
+optimizer = args.optimizer
+
+z_dim = args.z_dim
 loss_mode = args.loss_mode
 gp_mode = args.gp_mode
 gp_coef = args.gp_coef
 norm = args.norm
 weights_norm = args.weights_norm
+
 model_name = args.model_name
-optimizer = args.optimizer
+
 dataset_name = args.dataset_name
 experiment_name = args.experiment_name
 
@@ -158,7 +165,11 @@ try:
             it += 1
 
             # train D
-            for _ in range(n_d):
+            if n_d_pre > 0 and it <= 25:
+                n_d_ = n_d_pre
+            else:
+                n_d_ = n_d
+            for _ in range(n_d_):
                 # batch data
                 real_ipt = dataset.get_next_()
                 z_ipt = np.random.normal(size=[batch_size, z_dim])

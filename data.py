@@ -13,7 +13,7 @@ def get_dataset(dataset_name, batch_size):
     if dataset_name == 'mnist':
         # dataset
         pylib.mkdir('./data/mnist')
-        dataset = tl.Mnist(data_dir='./data/mnist', batch_size=batch_size, repeat=1)
+        dataset = tl.Mnist(data_dir='./data/mnist', batch_size=batch_size)
 
         # get next func
         def get_next():
@@ -35,7 +35,7 @@ def get_dataset(dataset_name, batch_size):
             return img
 
         paths = glob.glob('./data/celeba/img_align_celeba/*.jpg')
-        dataset = tl.DiskImageData(img_paths=paths, batch_size=batch_size, repeat=1, map_func=_map_func)
+        dataset = tl.DiskImageData(img_paths=paths, batch_size=batch_size, map_func=_map_func)
 
         # get next func
         dataset.get_next_ = dataset.get_next
