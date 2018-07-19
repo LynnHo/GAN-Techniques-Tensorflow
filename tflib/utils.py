@@ -2,13 +2,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import re
-
 import tensorflow as tf
 
 
-def session(graph=None, allow_soft_placement=True,
-            log_device_placement=False, allow_growth=True):
+def session(graph=None,
+            allow_soft_placement=True,
+            log_device_placement=False,
+            allow_growth=True):
     """Return a Session with simple config."""
     config = tf.ConfigProto(allow_soft_placement=allow_soft_placement,
                             log_device_placement=log_device_placement)
@@ -54,10 +54,7 @@ def summary(tensor_collection,
     def _summary(tensor, name, summary_type):
         """Attach a lot of summaries to a Tensor."""
         if name is None:
-            # Remove 'tower_[0-9]/' from the name in case this is a multi-GPU training
-            # session. This helps the clarity of presentation on tensorboard.
-            name = re.sub('%s_[0-9]*/' % 'tower', '', tensor.name)
-            name = re.sub(':', '-', name)
+            name = tensor.name
 
         summaries = []
         if len(tensor.shape) == 0:

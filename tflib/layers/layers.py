@@ -410,8 +410,8 @@ def spectral_normalization(weights,
         else:
             sigma_ = utils.smart_cond(is_training, lambda: sigma_, lambda: sigma)
             weights_sn = weights / sigma_
-            tf.add_to_collection(updates_collections, update_u)
-            tf.add_to_collection(updates_collections, update_sigma)
+            tf.add_to_collections(updates_collections, update_u)
+            tf.add_to_collections(updates_collections, update_sigma)
 
         return utils.collect_named_outputs(outputs_collections, sc.name, weights_sn)
 

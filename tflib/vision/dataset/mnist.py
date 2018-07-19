@@ -17,13 +17,6 @@ from tflib.data.memory_data import MemoryData
 _N_CPU = multiprocessing.cpu_count()
 
 
-def unzip_gz(file_name):
-    unzip_name = file_name.replace('.gz', '')
-    gz_file = gzip.GzipFile(file_name)
-    open(unzip_name, 'w+').write(gz_file.read())
-    gz_file.close()
-
-
 def mnist_download(download_dir):
     url_base = 'http://yann.lecun.com/exdb/mnist/'
     file_names = ['train-images-idx3-ubyte.gz',
@@ -60,12 +53,18 @@ def mnist_load(data_dir, split='train'):
         fname_img = os.path.join(data_dir, 't10k-images-idx3-ubyte')
         fname_lbl = os.path.join(data_dir, 't10k-labels-idx1-ubyte')
     else:
-        raise ValueError("split must be 'test' or 'train'")
+        raise ValueError("`split` must be 'test' or 'train'")
+
+    def _unzip_gz(file_name):
+        unzip_name = file_name.replace('.gz', '')
+        gz_file = gzip.GzipFile(file_name)
+        open(unzip_name, 'w+').write(gz_file.read())
+        gz_file.close()
 
     if not os.path.exists(fname_img):
-        unzip_gz(fname_img + '.gz')
+        _unzip_gz(fname_img + '.gz')
     if not os.path.exists(fname_lbl):
-        unzip_gz(fname_lbl + '.gz')
+        _unzip_gz(fname_lbl + '.gz')
 
     with open(fname_lbl, 'rb') as flbl:
         struct.unpack('>II', flbl.read(8))

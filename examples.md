@@ -26,15 +26,15 @@ CUDA_VISIBLE_DEVICES=0 python train.py --n_d 1 --n_g 1 --loss_mode gan --gp_mode
 
 ### CelebA WGAN
 ```console
-# wgan + weight_clip
-CUDA_VISIBLE_DEVICES=0 python train.py --n_d 5 --n_g 1 --loss_mode wgan --gp_mode none --norm none --weights_norm weight_clip --model conv_64 --optimizer rmsprop --dataset celeba --experiment_name conv64_celeba_loss{wgan}_gp{none}_norm{none}_wnorm{weight_clip}
+# wgan + weight_clip (does not work)
+CUDA_VISIBLE_DEVICES=0 python train.py --n_d 5 --n_g 1 --loss_mode wgan --gp_mode none --norm none --weights_norm weight_clip --model conv_64 --optimizer rmsprop --lr_d 0.00005 --lr_g 0.00005 --dataset celeba --experiment_name conv64_celeba_loss{wgan}_gp{none}_norm{none}_wnorm{weight_clip}
 # wagn + wgan-gp
 CUDA_VISIBLE_DEVICES=0 python train.py --n_d 5 --n_g 1 --loss_mode wgan --gp_mode wgan-gp --norm layer_norm --model conv_64 --dataset celeba --experiment_name conv64_celeba_loss{wgan}_gp{wgan-gp}_norm{layer_norm}_wnorm{none}
 CUDA_VISIBLE_DEVICES=0 python train.py --n_d 5 --n_g 1 --loss_mode wgan --gp_mode wgan-gp --norm instance_norm --model conv_64 --dataset celeba --experiment_name conv64_celeba_loss{wgan}_gp{wgan-gp}_norm{instance_norm}_wnorm{none}
-# wgan + spectral_norm
-CUDA_VISIBLE_DEVICES=0 python train.py --n_d 5 --n_g 1 --loss_mode wgan --gp_mode none --norm none --weights_norm spectral_norm --model conv_64 --dataset celeba --experiment_name conv64_celeba_loss{wgan}_gp{none}_norm{none}_wnorm{spectral_norm}
+# wgan + spectral_norm (does not work)
+CUDA_VISIBLE_DEVICES=0 python train.py --n_d 5 --n_g 1 --loss_mode wgan --gp_mode none --norm none --weights_norm spectral_norm --model conv_64 --lr_d 0.00005 --lr_g 0.00005 --dataset celeba --experiment_name conv64_celeba_loss{wgan}_gp{none}_norm{none}_wnorm{spectral_norm}
 # wgan + wgan-gp + spectral_norm
-CUDA_VISIBLE_DEVICES=0 python train.py --n_d 5 --n_g 1 --loss_mode wgan --gp_mode wgan-gp --norm none --weights_norm spectral_norm --model conv_64 --dataset celeba --experiment_name conv64_celeba_loss{wgan}_gp{wgan-gp}_norm{none}_wnorm{spectral_norm}
+CUDA_VISIBLE_DEVICES=0 python train.py --n_d 5 --n_g 1 --loss_mode wgan --gp_mode wgan-gp --norm none --weights_norm spectral_norm --model conv_64 --lr_d 0.00005 --lr_g 0.00005 --dataset celeba --experiment_name conv64_celeba_loss{wgan}_gp{wgan-gp}_norm{none}_wnorm{spectral_norm}
 ```
 
 ### CelebA Hinge Loss

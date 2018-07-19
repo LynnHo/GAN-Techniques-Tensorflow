@@ -7,35 +7,57 @@ from functools import partial
 import tensorflow as tf
 
 
-def tensors_filter(tensors, filters='', combine_type='or'):
+def tensors_filter(tensors,
+                   includes='',
+                   includes_combine_type='or',
+                   excludes=[],
+                   excludes_combine_type='or'):
     assert isinstance(tensors, (list, tuple)), '`tensors` shoule be a list or tuple!'
-    assert isinstance(filters, (str, list, tuple)), '`filters` should be a string or a list(tuple) of strings!'
-    assert combine_type == 'or' or combine_type == 'and', "`combine_type` should be 'or' or 'and'!"
+    assert isinstance(includes, (str, list, tuple)), '`includes` should be a string or a list(tuple) of strings!'
+    assert includes_combine_type in ['or', 'and'], "`includes_combine_type` should be 'or' or 'and'!"
+    assert isinstance(excludes, (str, list, tuple)), '`excludes` should be a string or a list(tuple) of strings!'
+    assert excludes_combine_type in ['or', 'and'], "`excludes_combine_type` should be 'or' or 'and'!"
 
-    if isinstance(filters, str):
-        filters = [filters]
+    def _select(filters, combine_type):
+        if isinstance(filters, str):
+            filters = [filters]
 
-    f_tens = []
-    for ten in tensors:
-        if combine_type == 'or':
-            for filt in filters:
-                if filt in ten.name:
-                    f_tens.append(ten)
-                    break
-        elif combine_type == 'and':
-            all_pass = True
-            for filt in filters:
-                if filt not in ten.name:
-                    all_pass = False
-                    break
-            if all_pass:
-                f_tens.append(ten)
-    return f_tens
+        selected = []
+        for t in tensors:
+            if combine_type == 'or':
+                for filt in filters:
+                    if filt in t.name:
+                        selected.append(t)
+                        break
+            elif combine_type == 'and':
+                all_pass = True and filters  # for fiters == []
+                for filt in filters:
+                    if filt not in t.name:
+                        all_pass = False
+                        break
+                if all_pass:
+                    selected.append(t)
+
+        return selected
+
+    include_set = _select(includes, includes_combine_type)
+    exclude_set = _select(excludes, excludes_combine_type)
+    select_set = list(set(include_set).difference(set(exclude_set)))
+
+    return select_set
 
 
-def get_collection(key, filters='', combine_type='or'):
+def get_collection(key,
+                   includes='',
+                   includes_combine_type='or',
+                   excludes=[],
+                   excludes_combine_type='and'):
     tensors = tf.get_collection(key)
-    return tensors_filter(tensors, filters, combine_type)
+    return tensors_filter(tensors,
+                          includes,
+                          includes_combine_type,
+                          excludes,
+                          excludes_combine_type)
 
 global_variables = partial(get_collection, key=tf.GraphKeys.GLOBAL_VARIABLES)
 trainable_variables = partial(get_collection, key=tf.GraphKeys.TRAINABLE_VARIABLES)

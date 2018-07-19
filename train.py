@@ -103,10 +103,10 @@ if optimizer == 'adam':
 elif optimizer == 'rmsprop':
     optim = tf.train.RMSPropOptimizer
 
-with tf.control_dependencies(tl.update_ops(filters='D')):
-    d_step = optim(learning_rate=lr_d).minimize(d_loss, var_list=tl.trainable_variables(filters='D'))
-with tf.control_dependencies(tl.update_ops(filters='G')):
-    g_step = optim(learning_rate=lr_g).minimize(g_loss, var_list=tl.trainable_variables(filters='G'))
+with tf.control_dependencies(tl.update_ops(includes='D')):
+    d_step = optim(learning_rate=lr_d).minimize(d_loss, var_list=tl.trainable_variables(includes='D'))
+with tf.control_dependencies(tl.update_ops(includes='G')):
+    g_step = optim(learning_rate=lr_g).minimize(g_loss, var_list=tl.trainable_variables(includes='G'))
 
 # summaries
 d_summary = tl.summary({d_loss: 'd_loss',
