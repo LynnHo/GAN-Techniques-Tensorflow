@@ -45,8 +45,8 @@ Tensorflow implementation of some common techniques of GANs, including losses, r
         CUDA_VISIBLE_DEVICES=0 python train.py --n_d 1 --n_g 1 --loss_mode hinge --gp_mode none --norm none --weights_norm spectral_norm --model conv_64 --dataset celeba --experiment_name conv64_celeba_loss{hinge}_gp{none}_norm{none}_wnorm{spectral_norm}
         # hinge + dragan + instance_norm + spectral_norm
         CUDA_VISIBLE_DEVICES=0 python train.py --n_d 1 --n_g 1 --loss_mode hinge --gp_mode dragan --norm instance_norm --weights_norm spectral_norm --model conv_64 --dataset celeba --experiment_name conv64_celeba_loss{hinge}_gp{dragan}_norm{instance_norm}_wnorm{spectral_norm}
-        # wgan + wgan-gp + spectral_norm
-        CUDA_VISIBLE_DEVICES=0 python train.py --n_d 5 --n_g 1 --loss_mode wgan --gp_mode wgan-gp --norm none --weights_norm spectral_norm --model conv_64 --dataset celeba --experiment_name conv64_celeba_loss{wgan}_gp{wgan-gp}_norm{none}_wnorm{spectral_norm}
+        # wgan + wgan-gp
+        CUDA_VISIBLE_DEVICES=0 python train.py --n_d 5 --n_g 1 --loss_mode wgan --gp_mode wgan-gp --norm instance_norm --model conv_64 --dataset celeba --experiment_name conv64_celeba_loss{wgan}_gp{wgan-gp}_norm{instance_norm}_wnorm{none}
         ```
 
 ## Datasets
