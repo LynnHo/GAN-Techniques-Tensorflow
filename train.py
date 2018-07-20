@@ -69,7 +69,6 @@ pylib.mkdir('./output/%s' % experiment_name)
 with open('./output/%s/setting.txt' % experiment_name, 'w') as f:
     f.write(json.dumps(vars(args), indent=4, separators=(',', ':')))
 
-
 # dataset
 dataset, img_shape = data.get_dataset(dataset_name, batch_size)
 
@@ -80,7 +79,7 @@ dataset, img_shape = data.get_dataset(dataset_name, batch_size)
 
 # models
 G, D = model.get_models(model_name)
-D = partial(D, norm_name=norm, weights_norm_name=weights_norm)
+D = partial(D, norm_name=norm, weights_norm_name='spectral_norm' if weights_norm == 'spectral_norm' else 'none')
 
 # loss func
 d_loss_fn, g_loss_fn = model.get_losses(loss_mode)
@@ -112,6 +111,9 @@ elif optimizer == 'rmsprop':
 
 with tf.control_dependencies(tl.update_ops(includes='D')):
     d_step = optim(learning_rate=lr_d).minimize(d_loss, var_list=tl.trainable_variables(includes='D'))
+    if weights_norm == 'weight_clip':
+        with tf.control_dependencies([d_step]):
+            d_step = tf.group(*(tf.assign(var, tf.clip_by_value(var, -0.01, 0.01)) for var in tl.trainable_variables(includes='D')))
 with tf.control_dependencies(tl.update_ops(includes='G')):
     g_step = optim(learning_rate=lr_g).minimize(g_loss, var_list=tl.trainable_variables(includes='G'))
 

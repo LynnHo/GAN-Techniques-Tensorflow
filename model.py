@@ -47,8 +47,6 @@ def _get_weight_norm_fn(weights_norm_name, is_training):
         weights_norm = None
     elif weights_norm_name == 'spectral_norm':
         weights_norm = partial(spectral_norm, is_training=is_training)
-    elif weights_norm_name == 'weight_clip':
-        weights_norm = weight_clip
     return weights_norm
 
 
@@ -203,8 +201,3 @@ def gradient_penalty(f, real, fake, mode):
         gp = _gradient_penalty(f, real)
 
     return gp
-
-
-def weight_clip(weights, clip=0.01):
-    with tf.control_dependencies([weights.assign(tf.clip_by_value(weights, -clip, clip))]):
-        return tf.identity(weights)
