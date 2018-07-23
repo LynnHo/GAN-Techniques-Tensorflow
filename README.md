@@ -17,6 +17,8 @@ Tensorflow implementation of some common techniques of GANs, including losses, r
     - [x] Weight Clipping
     - [ ] WeightNorm
     - [ ] Orthonormal Regularization
+- Generator Regularizations:
+    - [x] VGAN
 - Normalizations:
     - [x] BatchNorm, InstanceNorm, LayerNorm
 
@@ -39,6 +41,8 @@ Tensorflow implementation of some common techniques of GANs, including losses, r
         - `--experiment_name`: name for current experiment (default: `default`)
     - Examples (See more in [examples.md](examples.md))
         ```console
+        # vgan
+        CUDA_VISIBLE_DEVICES=0 python train.py --n_d 1 --n_g 1 --loss_mode gan --gp_mode none --norm batch_norm --vgan --model conv_64 --dataset celeba --experiment_name conv64_celeba_loss{gan}_gp{none}_norm{batch_norm}_wnorm{none}_vgan
         # gan + dragan
         CUDA_VISIBLE_DEVICES=0 python train.py --n_d 1 --n_g 1 --loss_mode gan --gp_mode dragan --norm layer_norm --model conv_mnist --dataset mnist --experiment_name conv_mnist_loss{gan}_gp{dragan}_norm{layer_norm}_wnorm{none}
         # hinge + spectral_norm

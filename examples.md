@@ -16,6 +16,8 @@ CUDA_VISIBLE_DEVICES=0 python train.py --n_d 5 --n_g 1 --loss_mode wgan --gp_mod
 ```console
 # dcgan
 CUDA_VISIBLE_DEVICES=0 python train.py --n_d 1 --n_g 1 --loss_mode gan --gp_mode none --norm batch_norm --model conv_64 --dataset celeba --experiment_name conv64_celeba_loss{gan}_gp{none}_norm{batch_norm}_wnorm{none}
+# vgan
+CUDA_VISIBLE_DEVICES=0 python train.py --n_d 1 --n_g 1 --loss_mode gan --gp_mode none --norm batch_norm --vgan --model conv_64 --dataset celeba --experiment_name conv64_celeba_loss{gan}_gp{none}_norm{batch_norm}_wnorm{none}_vgan
 # gan + dragan
 CUDA_VISIBLE_DEVICES=0 python train.py --n_d 1 --n_g 1 --loss_mode gan --gp_mode dragan --norm layer_norm --model conv_64 --dataset celeba --experiment_name conv64_celeba_loss{gan}_gp{dragan}_norm{layer_norm}_wnorm{none}
 CUDA_VISIBLE_DEVICES=0 python train.py --n_d 1 --n_g 1 --loss_mode gan --gp_mode dragan --norm instance_norm --model conv_64 --dataset celeba --experiment_name conv64_celeba_loss{gan}_gp{dragan}_norm{instance_norm}_wnorm{none}

@@ -37,6 +37,8 @@ parser.add_argument('--gp_mode', dest='gp_mode', default='none', choices=['none'
 parser.add_argument('--gp_coef', dest='gp_coef', type=float, default=10.0, help='coefficient of gradient penalty')
 parser.add_argument('--norm', dest='norm', default='batch_norm', choices=['batch_norm', 'instance_norm', 'layer_norm', 'none'])
 parser.add_argument('--weights_norm', dest='weights_norm', default='none', choices=['none', 'spectral_norm', 'weight_clip'])
+parser.add_argument('--vgan', dest='vgan', action='store_true', help='use vgan')
+parser.add_argument('--vgan_coef', dest='vgan_coef', type=float, default=5.0, help='coefficient of vgan regularization')
 
 parser.add_argument('--model', dest='model_name', default='conv_mnist', choices=['conv_mnist', 'conv_64'])
 parser.add_argument('--dataset', dest='dataset_name', default='mnist', choices=['mnist', 'celeba'])
@@ -59,6 +61,8 @@ gp_mode = args.gp_mode
 gp_coef = args.gp_coef
 norm = args.norm
 weights_norm = args.weights_norm
+vgan = args.vgan
+vgan_coef = args.vgan_coef
 
 model_name = args.model_name
 
@@ -102,6 +106,8 @@ d_loss = d_r_loss + d_f_loss + gp * gp_coef
 
 # g loss
 g_loss = g_loss_fn(f_logit)
+if vgan:
+    g_loss += tf.losses.mean_squared_error(tf.stop_gradient(fake), fake) * vgan_coef
 
 # otpims
 if optimizer == 'adam':
