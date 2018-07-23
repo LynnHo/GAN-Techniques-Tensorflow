@@ -36,6 +36,7 @@ Tensorflow implementation of some common techniques of GANs, including losses, r
         - `--gp_mode`: type of gradient penalty (choices: `[none, dragan, wgan-gp]`, default: `none`)
         - `--norm`: normalization (choices: `[batch_norm, instance_norm, layer_norm, none]`, default: `batch_norm`)
         - `--weights_norm`: weights normalization (choices: `[none, spectral_norm, weight_clip]`, default: `none`)
+        - `--vgan`: vgan regularization (`store_true`)
         - `--model`: model (choices: `[conv_mnist, conv_64]`, default: `conv_mnist`)
         - `--dataset`: dataset (choices: `[mnist, celeba]`, default: `mnist`)
         - `--experiment_name`: name for current experiment (default: `default`)
