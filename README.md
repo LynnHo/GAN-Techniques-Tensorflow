@@ -18,7 +18,7 @@ Tensorflow implementation of some common techniques of GANs, including losses, r
     - [ ] WeightNorm
     - [ ] Orthonormal Regularization
 - Generator Regularizations:
-    - [x] VGAN
+    - [x] [VGAN](https://arxiv.org/abs/1807.05936)
 - Normalizations:
     - [x] BatchNorm, InstanceNorm, LayerNorm
 
