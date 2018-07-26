@@ -18,12 +18,12 @@ dconv = partial(slim.conv2d_transpose, activation_fn=None)
 fc = partial(tl.flatten_fully_connected, activation_fn=None)
 relu = tf.nn.relu
 lrelu = tf.nn.leaky_relu
-batch_norm = partial(slim.batch_norm, scale=True)
-# batch_norm = partial(slim.batch_norm, scale=True, updates_collections=None)
+# batch_norm = partial(slim.batch_norm, scale=True)
+batch_norm = partial(slim.batch_norm, scale=True, updates_collections=None)
 layer_norm = slim.layer_norm
 instance_norm = slim.instance_norm
-spectral_norm = tl.spectral_normalization
-# spectral_norm = partial(tl.spectral_normalization, updates_collections=None)
+# spectral_norm = tl.spectral_normalization
+spectral_norm = partial(tl.spectral_normalization, updates_collections=None)
 
 
 # ==============================================================================

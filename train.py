@@ -115,6 +115,7 @@ if vgan:
     vgan_loss = tf.losses.mean_squared_error(old_fake, fake)
     g_loss = g_f_loss + vgan_loss * vgan_coef
 else:
+    vgan_loss = tf.constant(0.0)
     g_loss = g_f_loss
 
 # otpims
@@ -124,29 +125,27 @@ elif optimizer == 'rmsprop':
     optim = tf.train.RMSPropOptimizer
 
 # d
-with tf.control_dependencies(tl.update_ops(includes='D')):
-    d_step = optim(learning_rate=lr_d).minimize(d_loss, var_list=tl.trainable_variables(includes='D'))
+d_step = optim(learning_rate=lr_d).minimize(d_loss, var_list=tl.trainable_variables(includes='D'))
 
-    if weights_norm == 'weight_clip':
-        with tf.control_dependencies([d_step]):
-            d_step = tf.group(*(tf.assign(var, tf.clip_by_value(var, -0.01, 0.01)) for var in tl.trainable_variables(includes='D')))
+if weights_norm == 'weight_clip':
+    with tf.control_dependencies([d_step]):
+        d_step = tf.group(*(tf.assign(var, tf.clip_by_value(var, -0.01, 0.01)) for var in tl.trainable_variables(includes='D')))
 
-    if vgan:
-        with tf.control_dependencies([d_step]):
-            d_step = tf.assign(old_fake, fake)
+if vgan:
+    with tf.control_dependencies([d_step]):
+        d_step = tf.assign(old_fake, fake)
 
 # g
-with tf.control_dependencies(tl.update_ops(includes='G')):
-    g_step = optim(learning_rate=lr_g).minimize(g_loss, var_list=tl.trainable_variables(includes='G'))
+g_step = optim(learning_rate=lr_g).minimize(g_loss, var_list=tl.trainable_variables(includes='G'))
 
 # summaries
-d_summary = tl.summary({d_loss: 'd_loss',
-                        d_r_loss: 'd_r_loss',
+d_summary = tl.summary({d_r_loss: 'd_r_loss',
                         d_f_loss: 'd_f_loss',
-                        gp: 'gp'}, scope='D')
-g_summary = tl.summary({g_loss: 'g_loss',
-                        g_f_loss: 'g_f_loss',
-                        vgan_loss: 'vgan_loss'}, scope='G')
+                        gp: 'gp',
+                        d_loss: 'd_loss'}, scope='D')
+g_summary = tl.summary({g_f_loss: 'g_f_loss',
+                        vgan_loss: 'vgan_loss',
+                        g_loss: 'g_loss'}, scope='G')
 
 # sample
 z_sample = tf.placeholder(tf.float32, [None, z_dim])

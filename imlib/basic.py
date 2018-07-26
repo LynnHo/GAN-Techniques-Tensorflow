@@ -17,6 +17,8 @@ def imread(path, as_gray=False):
     image = iio.imread(path, as_gray)
     if image.dtype == np.uint8:
         image = image / 127.5 - 1
+    elif image.dtype == np.uint16:
+        image = image / 32767.5 - 1
     return image
 
 
