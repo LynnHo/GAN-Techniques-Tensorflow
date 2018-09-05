@@ -15,7 +15,7 @@ import tflib as tl
 
 conv = partial(tl.conv2d, activation_fn=None)
 dconv = partial(slim.conv2d_transpose, activation_fn=None)
-fc = partial(tl.flatten_fully_connected, activation_fn=None)
+fc = partial(tl.flatten_fully_connected_v2, activation_fn=None)
 relu = tf.nn.relu
 lrelu = tf.nn.leaky_relu
 # batch_norm = partial(slim.batch_norm, scale=True)
@@ -120,7 +120,7 @@ def get_models(model_name):
 # =                                loss function                               =
 # ==============================================================================
 
-def get_losses(mode):
+def get_loss_fn(mode):
     if mode == 'gan':
         def d_loss_fn(r_logit, f_logit):
             r_loss = tf.losses.sigmoid_cross_entropy(tf.ones_like(r_logit), r_logit)

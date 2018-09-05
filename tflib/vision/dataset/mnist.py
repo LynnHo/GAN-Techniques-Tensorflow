@@ -2,13 +2,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import gzip
 import multiprocessing
-import os
-import struct
-import subprocess
 
-import numpy as np
 import tensorflow as tf
 
 from tflib.data.memory_data import MemoryData
@@ -17,71 +12,9 @@ from tflib.data.memory_data import MemoryData
 _N_CPU = multiprocessing.cpu_count()
 
 
-def mnist_download(download_dir):
-    url_base = 'http://yann.lecun.com/exdb/mnist/'
-    file_names = ['train-images-idx3-ubyte.gz',
-                  'train-labels-idx1-ubyte.gz',
-                  't10k-images-idx3-ubyte.gz',
-                  't10k-labels-idx1-ubyte.gz']
-    for file_name in file_names:
-        url = url_base + file_name
-        save_path = os.path.join(download_dir, file_name)
-        cmd = ['curl', url, '-o', save_path]
-        print('Downloading ', file_name)
-        if not os.path.exists(save_path):
-            subprocess.call(cmd)
-        else:
-            print('%s exists, skip!' % file_name)
-
-
-def mnist_load(data_dir, split='train'):
-    """Load MNIST dataset, modified from https://gist.github.com/akesling/5358964.
-
-    Returns:
-        `imgs`, `lbls`, `num`.
-
-        `imgs` : [-1.0, 1.0] float64 images of shape (N * H * W).
-        `lbls` : Int labels of shape (N,).
-        `num`  : # of datas.
-    """
-    mnist_download(data_dir)
-
-    if split == 'train':
-        fname_img = os.path.join(data_dir, 'train-images-idx3-ubyte')
-        fname_lbl = os.path.join(data_dir, 'train-labels-idx1-ubyte')
-    elif split == 'test':
-        fname_img = os.path.join(data_dir, 't10k-images-idx3-ubyte')
-        fname_lbl = os.path.join(data_dir, 't10k-labels-idx1-ubyte')
-    else:
-        raise ValueError("`split` must be 'test' or 'train'")
-
-    def _unzip_gz(file_name):
-        unzip_name = file_name.replace('.gz', '')
-        gz_file = gzip.GzipFile(file_name)
-        open(unzip_name, 'w+').write(gz_file.read())
-        gz_file.close()
-
-    if not os.path.exists(fname_img):
-        _unzip_gz(fname_img + '.gz')
-    if not os.path.exists(fname_lbl):
-        _unzip_gz(fname_lbl + '.gz')
-
-    with open(fname_lbl, 'rb') as flbl:
-        struct.unpack('>II', flbl.read(8))
-        lbls = np.fromfile(flbl, dtype=np.int8)
-
-    with open(fname_img, 'rb') as fimg:
-        _, _, rows, cols = struct.unpack('>IIII', fimg.read(16))
-        imgs = np.fromfile(fimg, dtype=np.uint8).reshape(len(lbls), rows, cols)
-        imgs = imgs / 127.5 - 1
-
-    return imgs, lbls, len(lbls)
-
-
 class Mnist(MemoryData):
 
     def __init__(self,
-                 data_dir,
                  batch_size,
                  split='train',
                  prefetch_batch=_N_CPU + 1,
@@ -93,7 +26,15 @@ class Mnist(MemoryData):
                  buffer_size=None,
                  repeat=-1,
                  sess=None):
-        imgs, lbls, _ = mnist_load(data_dir, split)
+        (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data(path='mnist.npz')
+        if split == 'train':
+            imgs, lbls = x_train, y_train
+        elif split == 'test':
+            imgs, lbls = x_test, y_test
+        else:
+            raise ValueError("`split` must be 'test' or 'train'!")
+        imgs = imgs / 127.5 - 1
+
         imgs.shape = imgs.shape + (1,)
 
         imgs_pl = tf.placeholder(tf.float32, imgs.shape)
@@ -121,7 +62,7 @@ if __name__ == '__main__':
     import imlib as im
     from tflib import session
     sess = session()
-    mnist = Mnist('/tmp', 5000, repeat=1, sess=sess)
+    mnist = Mnist(500, repeat=2, sess=sess, shuffle=True, split='train')
     print(len(mnist))
     for batch in mnist:
         print(batch['lbl'][-1])

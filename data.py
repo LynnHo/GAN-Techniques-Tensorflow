@@ -4,7 +4,6 @@ from __future__ import print_function
 
 import glob as glob
 
-import pylib
 import tensorflow as tf
 import tflib as tl
 
@@ -12,8 +11,7 @@ import tflib as tl
 def get_dataset(dataset_name, batch_size):
     if dataset_name == 'mnist':
         # dataset
-        pylib.mkdir('./data/mnist')
-        dataset = tl.Mnist(data_dir='./data/mnist', batch_size=batch_size)
+        dataset = tl.Mnist(batch_size=batch_size)
 
         # get next func
         def get_next():

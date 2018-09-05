@@ -6,5 +6,6 @@ from tflib.checkpoint import *
 from tflib.collection import *
 from tflib.data import *
 from tflib.layers import *
+from tflib.parallel import *
 from tflib.utils import *
 from tflib.vision import *

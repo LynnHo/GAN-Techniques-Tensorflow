@@ -42,7 +42,7 @@ def tensors_filter(tensors,
 
     include_set = _select(includes, includes_combine_type)
     exclude_set = _select(excludes, excludes_combine_type)
-    select_set = list(set(include_set).difference(set(exclude_set)))
+    select_set = [t for t in include_set if t not in exclude_set]
 
     return select_set
 

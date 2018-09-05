@@ -77,10 +77,10 @@ class MemoryData(Dataset):
                                             shuffle_buffer_size,
                                             repeat)
         self._bulid(dataset, sess)
-        if isinstance(memory_data_dict.values()[0], np.ndarray):
-            self._n_data = len(memory_data_dict.values()[0])
+        if isinstance(list(memory_data_dict.values())[0], np.ndarray):
+            self._n_data = len(list(memory_data_dict.values())[0])
         else:
-            self._n_data = memory_data_dict.values()[0].get_shape().as_list()[0]
+            self._n_data = list(memory_data_dict.values())[0].get_shape().as_list()[0]
 
     def __len__(self):
         return self._n_data

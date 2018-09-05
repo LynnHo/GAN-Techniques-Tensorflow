@@ -85,8 +85,14 @@ dataset, img_shape = data.get_dataset(dataset_name, batch_size)
 G, D = model.get_models(model_name)
 D = partial(D, norm_name=norm, weights_norm_name='spectral_norm' if weights_norm == 'spectral_norm' else 'none')
 
+# otpims
+if optimizer == 'adam':
+    optim = partial(tf.train.AdamOptimizer, beta1=0.5)
+elif optimizer == 'rmsprop':
+    optim = tf.train.RMSPropOptimizer
+
 # loss func
-d_loss_fn, g_loss_fn = model.get_losses(loss_mode)
+d_loss_fn, g_loss_fn = model.get_loss_fn(loss_mode)
 
 # inputs
 real = tf.placeholder(tf.float32, [None] + img_shape)
@@ -118,34 +124,27 @@ else:
     vgan_loss = tf.constant(0.0)
     g_loss = g_f_loss
 
-# otpims
-if optimizer == 'adam':
-    optim = partial(tf.train.AdamOptimizer, beta1=0.5)
-elif optimizer == 'rmsprop':
-    optim = tf.train.RMSPropOptimizer
-
-# d
+# d step
 d_step = optim(learning_rate=lr_d).minimize(d_loss, var_list=tl.trainable_variables(includes='D'))
 
 if weights_norm == 'weight_clip':
     with tf.control_dependencies([d_step]):
         d_step = tf.group(*(tf.assign(var, tf.clip_by_value(var, -0.01, 0.01)) for var in tl.trainable_variables(includes='D')))
 
-if vgan:
-    with tf.control_dependencies([d_step]):
-        d_step = tf.assign(old_fake, fake)
-
-# g
+# g step
 g_step = optim(learning_rate=lr_g).minimize(g_loss, var_list=tl.trainable_variables(includes='G'))
+
+if vgan:
+    with tf.control_dependencies([g_step]):
+        g_step = tf.assign(old_fake, fake)
 
 # summaries
 d_summary = tl.summary({d_r_loss: 'd_r_loss',
                         d_f_loss: 'd_f_loss',
-                        gp: 'gp',
-                        d_loss: 'd_loss'}, scope='D')
+                        d_r_loss + d_f_loss: 'd_loss',
+                        gp: 'gp'}, scope='D')
 g_summary = tl.summary({g_f_loss: 'g_f_loss',
-                        vgan_loss: 'vgan_loss',
-                        g_loss: 'g_loss'}, scope='G')
+                        vgan_loss: 'vgan_loss'}, scope='G')
 
 # sample
 z_sample = tf.placeholder(tf.float32, [None, z_dim])

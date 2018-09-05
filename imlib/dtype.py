@@ -70,3 +70,8 @@ def uint2float(images):
     """Transform images from uint8 to [0.0, 1.0] of float64."""
     _check(images, np.uint8)
     return images / 255.0
+
+
+def cv2im(images):
+    images = uint2im(images)
+    return images[..., ::-1]

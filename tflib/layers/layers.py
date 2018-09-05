@@ -8,6 +8,8 @@ import six
 
 import tensorflow as tf
 
+from tensorflow.contrib import slim
+
 from tensorflow.contrib.framework.python.ops import add_arg_scope
 from tensorflow.contrib.framework.python.ops import variables
 from tensorflow.contrib.layers.python import layers
@@ -144,23 +146,23 @@ def fully_connected(inputs,
 
 
 @add_arg_scope
-def flatten_fully_connected(inputs,
-                            num_outputs,
-                            activation_fn=nn.relu,
-                            normalizer_fn=None,
-                            normalizer_params=None,
-                            weights_normalizer_fn=None,
-                            weights_normalizer_params=None,
-                            weights_initializer=initializers.xavier_initializer(),
-                            weights_regularizer=None,
-                            biases_initializer=init_ops.zeros_initializer(),
-                            biases_regularizer=None,
-                            reuse=None,
-                            variables_collections=None,
-                            outputs_collections=None,
-                            trainable=True,
-                            scope=None):
-    with variable_scope.variable_scope(scope, 'flatten_fully_connected'):
+def flatten_fully_connected_v2(inputs,
+                               num_outputs,
+                               activation_fn=nn.relu,
+                               normalizer_fn=None,
+                               normalizer_params=None,
+                               weights_normalizer_fn=None,
+                               weights_normalizer_params=None,
+                               weights_initializer=initializers.xavier_initializer(),
+                               weights_regularizer=None,
+                               biases_initializer=init_ops.zeros_initializer(),
+                               biases_regularizer=None,
+                               reuse=None,
+                               variables_collections=None,
+                               outputs_collections=None,
+                               trainable=True,
+                               scope=None):
+    with variable_scope.variable_scope(scope, 'flatten_fully_connected_v2'):
         if inputs.shape.ndims > 2:
             inputs = layers.flatten(inputs)
         return fully_connected(inputs=inputs,
@@ -180,7 +182,43 @@ def flatten_fully_connected(inputs,
                                trainable=trainable,
                                scope=scope)
 
-flatten_dense = flatten_fully_connected
+flatten_dense_v2 = flatten_fully_connected_v2
+
+
+@add_arg_scope
+def flatten_fully_connected_v1(inputs,
+                               num_outputs,
+                               activation_fn=tf.nn.relu,
+                               normalizer_fn=None,
+                               normalizer_params=None,
+                               weights_initializer=slim.xavier_initializer(),
+                               weights_regularizer=None,
+                               biases_initializer=tf.zeros_initializer(),
+                               biases_regularizer=None,
+                               reuse=None,
+                               variables_collections=None,
+                               outputs_collections=None,
+                               trainable=True,
+                               scope=None):
+    with tf.variable_scope(scope, 'flatten_fully_connected_v1'):
+        if inputs.shape.ndims > 2:
+            inputs = slim.flatten(inputs)
+        return slim.fully_connected(inputs,
+                                    num_outputs,
+                                    activation_fn,
+                                    normalizer_fn,
+                                    normalizer_params,
+                                    weights_initializer,
+                                    weights_regularizer,
+                                    biases_initializer,
+                                    biases_regularizer,
+                                    reuse,
+                                    variables_collections,
+                                    outputs_collections,
+                                    trainable,
+                                    scope)
+
+flatten_dense_v1 = flatten_fully_connected_v1
 
 
 @add_arg_scope

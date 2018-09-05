@@ -116,7 +116,7 @@ if __name__ == '__main__':
 
     paths = glob.glob('/home/hezhenliang/Resource/face/CelebA/origin/origin/processed_by_hezhenliang/align_celeba/img_align_celeba/*.jpg')
     paths = sorted(paths)[182637:]
-    labels = range(len(paths))
+    labels = list(range(len(paths)))
 
     def filter(x, y, *args):
         return tf.cond(y > 1, lambda: tf.constant(True), lambda: tf.constant(False))
@@ -126,18 +126,18 @@ if __name__ == '__main__':
         x = tf.to_float((x - tf.reduce_min(x)) / (tf.reduce_max(x) - tf.reduce_min(x)) * 2 - 1)
         return (x,) + args
 
-    # tf.enable_eager_execution()
+    tf.enable_eager_execution()
 
     s = tf.Session()
 
-    data = DiskImageData(paths, 32, (labels, labels), filter=None, map_func=map_func, shuffle=True, sess=s)
+    data = DiskImageData(paths, 32, (labels, labels), filter=None, map_func=None, shuffle=True, sess=s)
 
     for _ in range(1000):
         with pylib.Timer():
             for i in range(100):
                 b = data.get_next()
-                print(b[1][0])
-                print(b[2][0])
-                im.imshow(np.array(b[0][0]))
-                im.show()
+                # print(b[1][0])
+                # print(b[2][0])
+                # im.imshow(np.array(b[0][0]))
+                # im.show()
                 # data.reset()

@@ -23,15 +23,17 @@ def print_tensor(tensors):
     for i, tensor in enumerate(tensors):
         ctype = str(type(tensor))
         if 'Tensor' in ctype:
-            type_name = 'Tensor'
+            print('%d: %s("%s", shape=%s, dtype=%s, device=%s)' %
+                  (i, 'Tensor', tensor.name, tensor.shape, tensor.dtype.name, tensor.device))
         elif 'Variable' in ctype:
-            type_name = 'Variable'
+            print('%d: %s("%s", shape=%s, dtype=%s, device=%s)' %
+                  (i, 'Variable', tensor.name, tensor.shape, tensor.dtype.name, tensor.device))
+        elif 'Operation' in ctype:
+            print('%d: %s("%s", device=%s)' %
+                  (i, 'Operation', tensor.name, tensor.device))
         else:
-            raise Exception('Not a Tensor or Variable!')
+            raise Exception('Not a Tensor, Variable or Operation!')
 
-        print(str(i) + (': %s("%s", shape=%s, dtype=%s, device=%s)'
-                        % (type_name, tensor.name, str(tensor.get_shape()),
-                           tensor.dtype.name, tensor.device)))
 
 prt = print_tensor
 
